@@ -4,7 +4,6 @@
 -- //  INSERT = Toggle Menu | DEL = Panic Unload
 -- ████████████████████████████████████████████████████████████
 
--- ── SERVICES ─────────────────────────────────────────────────
 local Players          = game:GetService("Players")
 local RunService       = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -14,7 +13,6 @@ local HttpService      = game:GetService("HttpService")
 local Camera           = workspace.CurrentCamera
 local LocalPlayer      = Players.LocalPlayer
 
--- ── KEYAUTH CREDENTIALS ──────────────────────────────────────
 local KA = {
     name    = "AuthX",
     ownerid = "nydmC2rmel",
@@ -22,7 +20,6 @@ local KA = {
     version = "1.0",
 }
 
--- ── CFG ──────────────────────────────────────────────────────
 local CFG = {
     AimEnabled=true, AimKey=Enum.UserInputType.MouseButton2,
     AimPart="Head", FOVRadius=180, Smoothness=0.20, Prediction=0.13,
@@ -42,12 +39,9 @@ local CFG = {
     InfJumpEnabled=false, JumpCount=99, JumpHeight=1.0,
     BhopEnabled=false,
     StreamProof=true,
-    -- Ragebot
     RagebotEnabled=false, RagebotDelay=0.12, RagebotShots=3,
-    RagebotPanic=false,
 }
 
--- ── PALETTE ──────────────────────────────────────────────────
 local PAL = {
     bg0=Color3.fromRGB(4,4,4),     bg1=Color3.fromRGB(9,9,9),
     bg2=Color3.fromRGB(14,14,14),  bg3=Color3.fromRGB(22,22,22),
@@ -60,7 +54,6 @@ local PAL = {
     gold=Color3.fromRGB(255,210,60),
 }
 
--- ── UTILS ────────────────────────────────────────────────────
 local function inst(cls, props, parent)
     local o = Instance.new(cls)
     for k,v in pairs(props) do pcall(function() o[k]=v end) end
@@ -127,107 +120,101 @@ local function getAllTargets()
     return list
 end
 
--- ── DESTROY OLD GUI ──────────────────────────────────────────
 pcall(function() CoreGui:FindFirstChild("AuthX_Gate"):Destroy() end)
 pcall(function() CoreGui:FindFirstChild("AuthX_v35"):Destroy() end)
 
--- ── ROOT SCREENGUI ───────────────────────────────────────────
-local RootGui = inst("ScreenGui",{Name="AuthX_Gate",ResetOnSpawn=false,ZIndexBehavior=Enum.ZIndexBehavior.Sibling})
-RootGui.Parent = CoreGui
+local RootGui=inst("ScreenGui",{Name="AuthX_Gate",ResetOnSpawn=false,ZIndexBehavior=Enum.ZIndexBehavior.Sibling})
+RootGui.Parent=CoreGui
 
--- ████████████████████████████████████████████████████████████
--- ── KEY AUTH GATE UI ─────────────────────────────────────────
--- ████████████████████████████████████████████████████████████
-local GateFrame = inst("Frame",{
-    Name="GateFrame",
-    Size=UDim2.new(0,480,0,320),
-    Position=UDim2.new(0.5,-240,0.5,-160),
-    BackgroundColor3=PAL.bg0,
-    BorderSizePixel=0,
-}, RootGui)
+-- ── GATE FRAME ───────────────────────────────────────────────
+local GateFrame=inst("Frame",{
+    Name="GateFrame", Size=UDim2.new(0,460,0,300),
+    Position=UDim2.new(0.5,-230,0.5,-150),
+    BackgroundColor3=PAL.bg0, BorderSizePixel=0,
+},RootGui)
 corner(GateFrame,14)
 stroke(GateFrame,PAL.border,1)
-
--- top glow line
-local gGlow=inst("Frame",{Size=UDim2.new(1,0,0,1.5),BackgroundColor3=PAL.accent,BorderSizePixel=0,ZIndex=2},GateFrame)
-corner(gGlow,2)
-inst("UIGradient",{Transparency=NumberSequence.new({
-    NumberSequenceKeypoint.new(0,1), NumberSequenceKeypoint.new(0.25,0),
-    NumberSequenceKeypoint.new(0.75,0), NumberSequenceKeypoint.new(1,1)
-})},gGlow)
-
--- ambient bg gradient
 inst("UIGradient",{
     Color=ColorSequence.new({
         ColorSequenceKeypoint.new(0,Color3.fromRGB(10,10,10)),
         ColorSequenceKeypoint.new(1,Color3.fromRGB(4,4,4))
-    }),
-    Rotation=135,
+    }), Rotation=135,
 },GateFrame)
 
--- Logo
-local logoLbl=lbl(GateFrame,{
-    Text="AuthX",Font=Enum.Font.GothamBold,TextSize=28,
-    TextColor3=PAL.textP,Size=UDim2.new(1,0,0,36),
-    Position=UDim2.new(0,0,0,28),TextXAlignment=Enum.TextXAlignment.Center,
-    ZIndex=3,
-})
-local subLbl=lbl(GateFrame,{
-    Text="KEY VERIFICATION REQUIRED",Font=Enum.Font.Gotham,TextSize=9,
-    TextColor3=PAL.textM,Size=UDim2.new(1,0,0,16),
-    Position=UDim2.new(0,0,0,62),TextXAlignment=Enum.TextXAlignment.Center,
-    ZIndex=3,
-})
--- version badge
-local verBadge=inst("Frame",{
-    Size=UDim2.new(0,50,0,16),AnchorPoint=Vector2.new(0.5,0),
-    Position=UDim2.new(0.5,0,0,52),BackgroundColor3=PAL.bg3,BorderSizePixel=0,ZIndex=4
-},GateFrame)
-corner(verBadge,4) stroke(verBadge,PAL.border)
-lbl(verBadge,{Text="v1.0",Font=Enum.Font.GothamBold,TextSize=9,TextColor3=PAL.textM,
-    Size=UDim2.new(1,0,1,0),TextXAlignment=Enum.TextXAlignment.Center,ZIndex=5})
+-- top glow
+local gGlow=inst("Frame",{Size=UDim2.new(1,0,0,1.5),BackgroundColor3=PAL.accent,BorderSizePixel=0,ZIndex=2},GateFrame)
+corner(gGlow,2)
+inst("UIGradient",{Transparency=NumberSequence.new({
+    NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(0.25,0),
+    NumberSequenceKeypoint.new(0.75,0),NumberSequenceKeypoint.new(1,1)
+})},gGlow)
 
--- Divider
-local div=inst("Frame",{Size=UDim2.new(0,340,0,1),AnchorPoint=Vector2.new(0.5,0),
-    Position=UDim2.new(0.5,0,0,94),BackgroundColor3=PAL.border,BorderSizePixel=0,ZIndex=3},GateFrame)
+-- ── LOGO: AuthX then v1.0 BELOW it, no overlap ───────────────
+lbl(GateFrame,{
+    Text="AuthX", Font=Enum.Font.GothamBold, TextSize=30,
+    TextColor3=PAL.textP, Size=UDim2.new(1,0,0,38),
+    Position=UDim2.new(0,0,0,24),
+    TextXAlignment=Enum.TextXAlignment.Center, ZIndex=3,
+})
+lbl(GateFrame,{
+    Text="v1.0", Font=Enum.Font.Gotham, TextSize=9,
+    TextColor3=PAL.textM, Size=UDim2.new(1,0,0,14),
+    Position=UDim2.new(0,0,0,62),
+    TextXAlignment=Enum.TextXAlignment.Center, ZIndex=3,
+})
+lbl(GateFrame,{
+    Text="KEY VERIFICATION REQUIRED", Font=Enum.Font.GothamBold, TextSize=8,
+    TextColor3=PAL.textM, Size=UDim2.new(1,0,0,14),
+    Position=UDim2.new(0,0,0,78),
+    TextXAlignment=Enum.TextXAlignment.Center, ZIndex=3,
+})
 
--- Key input
-local inputBox_bg=inst("Frame",{
-    Size=UDim2.new(0,360,0,42),AnchorPoint=Vector2.new(0.5,0),
+-- divider
+inst("Frame",{Size=UDim2.new(0,320,0,1),AnchorPoint=Vector2.new(0.5,0),
+    Position=UDim2.new(0.5,0,0,100),BackgroundColor3=PAL.border,BorderSizePixel=0,ZIndex=3},GateFrame)
+
+-- key input
+local inputBg=inst("Frame",{
+    Size=UDim2.new(0,360,0,42), AnchorPoint=Vector2.new(0.5,0),
     Position=UDim2.new(0.5,0,0,112),
-    BackgroundColor3=PAL.bg2,BorderSizePixel=0,ZIndex=3
+    BackgroundColor3=PAL.bg2, BorderSizePixel=0, ZIndex=3,
 },GateFrame)
-corner(inputBox_bg,8)
-stroke(inputBox_bg,PAL.border,1)
--- lock icon placeholder text
-lbl(inputBox_bg,{Text="🔑",Font=Enum.Font.GothamBold,TextSize=14,
-    TextColor3=PAL.textM,Size=UDim2.new(0,32,1,0),
-    Position=UDim2.new(0,10,0,0),TextXAlignment=Enum.TextXAlignment.Center,ZIndex=4})
+corner(inputBg,8) stroke(inputBg,PAL.border,1)
+lbl(inputBg,{Text="🔑",Font=Enum.Font.GothamBold,TextSize=14,TextColor3=PAL.textM,
+    Size=UDim2.new(0,32,1,0),Position=UDim2.new(0,10,0,0),
+    TextXAlignment=Enum.TextXAlignment.Center,ZIndex=4})
 local keyInput=inst("TextBox",{
-    Size=UDim2.new(1,-52,1,-2),Position=UDim2.new(0,42,0,1),
-    BackgroundTransparency=1,BorderSizePixel=0,
+    Size=UDim2.new(1,-52,1,-2), Position=UDim2.new(0,42,0,1),
+    BackgroundTransparency=1, BorderSizePixel=0,
     PlaceholderText="Enter your license key...",
-    PlaceholderColor3=PAL.textM,Text="",
-    Font=Enum.Font.Gotham,TextSize=13,TextColor3=PAL.textP,
+    PlaceholderColor3=PAL.textM, Text="",
+    Font=Enum.Font.Gotham, TextSize=13, TextColor3=PAL.textP,
     TextXAlignment=Enum.TextXAlignment.Left,
-    ClearTextOnFocus=false,ZIndex=4,
-},inputBox_bg)
+    ClearTextOnFocus=false, ZIndex=4,
+},inputBg)
 
--- Status label
+keyInput.Focused:Connect(function()
+    TweenService:Create(inputBg,TweenInfo.new(0.15),{BackgroundColor3=PAL.bg3}):Play()
+    stroke(inputBg,PAL.borderHi,1)
+end)
+keyInput.FocusLost:Connect(function()
+    TweenService:Create(inputBg,TweenInfo.new(0.15),{BackgroundColor3=PAL.bg2}):Play()
+    stroke(inputBg,PAL.border,1)
+end)
+
 local statusLbl=lbl(GateFrame,{
-    Text="",Font=Enum.Font.Gotham,TextSize=10,
-    TextColor3=PAL.textM,Size=UDim2.new(0,360,0,16),
-    AnchorPoint=Vector2.new(0.5,0),Position=UDim2.new(0.5,0,0,162),
-    TextXAlignment=Enum.TextXAlignment.Center,ZIndex=3,
+    Text="", Font=Enum.Font.Gotham, TextSize=10,
+    TextColor3=PAL.textM, Size=UDim2.new(0,360,0,16),
+    AnchorPoint=Vector2.new(0.5,0), Position=UDim2.new(0.5,0,0,162),
+    TextXAlignment=Enum.TextXAlignment.Center, ZIndex=3,
 })
 
--- Verify button
 local verifyBtn=inst("TextButton",{
-    Size=UDim2.new(0,180,0,40),AnchorPoint=Vector2.new(0.5,0),
-    Position=UDim2.new(0.5,0,0,186),
-    BackgroundColor3=PAL.accent,BorderSizePixel=0,
-    Text="VERIFY KEY",Font=Enum.Font.GothamBold,TextSize=12,
-    TextColor3=PAL.bg0,ZIndex=4,AutoButtonColor=false,
+    Size=UDim2.new(0,180,0,40), AnchorPoint=Vector2.new(0.5,0),
+    Position=UDim2.new(0.5,0,0,184),
+    BackgroundColor3=PAL.accent, BorderSizePixel=0,
+    Text="VERIFY KEY", Font=Enum.Font.GothamBold, TextSize=12,
+    TextColor3=PAL.bg0, ZIndex=4, AutoButtonColor=false,
 },GateFrame)
 corner(verifyBtn,8)
 verifyBtn.MouseEnter:Connect(function()
@@ -237,234 +224,211 @@ verifyBtn.MouseLeave:Connect(function()
     TweenService:Create(verifyBtn,TweenInfo.new(0.12),{BackgroundColor3=PAL.accent}):Play()
 end)
 
--- Get key link
-local getKeyLbl=lbl(GateFrame,{
-    Text="Get a key  →  discord.gg/authx",Font=Enum.Font.Gotham,TextSize=9,
-    TextColor3=PAL.textM,Size=UDim2.new(1,0,0,14),
-    Position=UDim2.new(0,0,0,240),TextXAlignment=Enum.TextXAlignment.Center,ZIndex=3,
-})
-
--- ── LOADING OVERLAY ──────────────────────────────────────────
+-- ── LOAD OVERLAY ─────────────────────────────────────────────
 local LoadOverlay=inst("Frame",{
-    Name="LoadOverlay",Size=UDim2.new(1,0,1,0),
-    BackgroundColor3=PAL.bg0,BorderSizePixel=0,ZIndex=20,Visible=false
+    Size=UDim2.new(1,0,1,0), BackgroundColor3=PAL.bg0,
+    BorderSizePixel=0, ZIndex=20, Visible=false,
 },GateFrame)
-
--- large logo during load
-local loadLogo=lbl(LoadOverlay,{
-    Text="AuthX",Font=Enum.Font.GothamBold,TextSize=32,
-    TextColor3=PAL.textP,Size=UDim2.new(1,0,0,40),
-    Position=UDim2.new(0,0,0.28,0),TextXAlignment=Enum.TextXAlignment.Center,
-    ZIndex=21,
+lbl(LoadOverlay,{
+    Text="AuthX", Font=Enum.Font.GothamBold, TextSize=32,
+    TextColor3=PAL.textP, Size=UDim2.new(1,0,0,40),
+    Position=UDim2.new(0,0,0.25,0), TextXAlignment=Enum.TextXAlignment.Center, ZIndex=21,
 })
 local loadSub=lbl(LoadOverlay,{
-    Text="LOADING SUITE...",Font=Enum.Font.Gotham,TextSize=9,
-    TextColor3=PAL.textM,Size=UDim2.new(1,0,0,16),
-    Position=UDim2.new(0,0,0.28,46),TextXAlignment=Enum.TextXAlignment.Center,
-    ZIndex=21,
+    Text="LOADING SUITE...", Font=Enum.Font.Gotham, TextSize=9,
+    TextColor3=PAL.textM, Size=UDim2.new(1,0,0,16),
+    Position=UDim2.new(0,0,0.25,46), TextXAlignment=Enum.TextXAlignment.Center, ZIndex=21,
 })
-
--- Progress bar bg
 local pBarBg=inst("Frame",{
-    Size=UDim2.new(0,280,0,3),AnchorPoint=Vector2.new(0.5,0),
-    Position=UDim2.new(0.5,0,0.28,74),
-    BackgroundColor3=PAL.bg3,BorderSizePixel=0,ZIndex=21
+    Size=UDim2.new(0,280,0,3), AnchorPoint=Vector2.new(0.5,0),
+    Position=UDim2.new(0.5,0,0.25,72), BackgroundColor3=PAL.bg3,
+    BorderSizePixel=0, ZIndex=21,
 },LoadOverlay)
 corner(pBarBg,4)
-local pBarFill=inst("Frame",{
-    Size=UDim2.new(0,0,1,0),BackgroundColor3=PAL.accent,
-    BorderSizePixel=0,ZIndex=22
-},pBarBg)
+local pBarFill=inst("Frame",{Size=UDim2.new(0,0,1,0),BackgroundColor3=PAL.accent,BorderSizePixel=0,ZIndex=22},pBarBg)
 corner(pBarFill,4)
-inst("UIGradient",{
-    Color=ColorSequence.new({
-        ColorSequenceKeypoint.new(0,Color3.fromRGB(180,180,180)),
-        ColorSequenceKeypoint.new(1,Color3.fromRGB(255,255,255))
-    }),
-    Rotation=90
-},pBarFill)
-
--- shimmer effect on bar
+inst("UIGradient",{Color=ColorSequence.new({
+    ColorSequenceKeypoint.new(0,Color3.fromRGB(160,160,160)),
+    ColorSequenceKeypoint.new(1,Color3.fromRGB(255,255,255))
+}),Rotation=90},pBarFill)
 local shimmer=inst("Frame",{
-    Size=UDim2.new(0,60,1,0),Position=UDim2.new(-0.3,0,0,0),
+    Size=UDim2.new(0,60,1,0), Position=UDim2.new(-0.3,0,0,0),
     BackgroundColor3=Color3.fromRGB(255,255,255),
-    BackgroundTransparency=0.7,BorderSizePixel=0,ZIndex=23,ClipsDescendants=false
+    BackgroundTransparency=0.7, BorderSizePixel=0, ZIndex=23,
 },pBarFill)
 corner(shimmer,4)
-inst("UIGradient",{
-    Transparency=NumberSequence.new({
-        NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(0.5,0.4),NumberSequenceKeypoint.new(1,1)
-    }),
-    Rotation=0
-},shimmer)
-
--- Loading step label
+inst("UIGradient",{Transparency=NumberSequence.new({
+    NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(0.5,0.4),NumberSequenceKeypoint.new(1,1)
+}),Rotation=0},shimmer)
 local stepLbl=lbl(LoadOverlay,{
-    Text="Initializing...",Font=Enum.Font.Gotham,TextSize=9,
-    TextColor3=PAL.textM,Size=UDim2.new(1,0,0,14),
-    Position=UDim2.new(0,0,0.28,84),TextXAlignment=Enum.TextXAlignment.Center,
-    ZIndex=21,
+    Text="Initializing...", Font=Enum.Font.Gotham, TextSize=9,
+    TextColor3=PAL.textM, Size=UDim2.new(1,0,0,14),
+    Position=UDim2.new(0,0,0.25,82), TextXAlignment=Enum.TextXAlignment.Center, ZIndex=21,
 })
 
--- Spinning ring (3 dots orbiting)
+-- Spinning dots
 local spinFrame=inst("Frame",{
-    Size=UDim2.new(0,40,0,40),AnchorPoint=Vector2.new(0.5,0),
-    Position=UDim2.new(0.5,0,0.28,108),
-    BackgroundTransparency=1,BorderSizePixel=0,ZIndex=21
+    Size=UDim2.new(0,40,0,40), AnchorPoint=Vector2.new(0.5,0),
+    Position=UDim2.new(0.5,0,0.25,106),
+    BackgroundTransparency=1, ZIndex=21,
 },LoadOverlay)
 local spinDots={}
 for i=1,3 do
-    local dot=inst("Frame",{
-        Size=UDim2.new(0,5,0,5),AnchorPoint=Vector2.new(0.5,0.5),
-        BackgroundColor3=i==1 and PAL.accent or PAL.textM,
-        BorderSizePixel=0,ZIndex=22
-    },spinFrame)
-    corner(dot,4)
-    spinDots[i]=dot
+    local dot=inst("Frame",{Size=UDim2.new(0,5,0,5),AnchorPoint=Vector2.new(0.5,0.5),
+        BackgroundColor3=PAL.textM,BorderSizePixel=0,ZIndex=22},spinFrame)
+    corner(dot,4) spinDots[i]=dot
 end
-
--- Spin animation
 local spinAngle=0
-local spinConn
-spinConn=RunService.Heartbeat:Connect(function(dt)
+local spinConn=RunService.Heartbeat:Connect(function(dt)
     spinAngle=spinAngle+dt*3.5
     for i,dot in ipairs(spinDots) do
         local a=spinAngle+(i-1)*(math.pi*2/3)
-        local px=0.5+math.cos(a)*0.45
-        local py=0.5+math.sin(a)*0.45
-        dot.Position=UDim2.new(px,0,py,0)
-        local brightness=0.5+0.5*math.sin(a)
-        dot.BackgroundColor3=Color3.fromRGB(math.floor(brightness*255),math.floor(brightness*255),math.floor(brightness*255))
+        dot.Position=UDim2.new(0.5+math.cos(a)*0.45,0,0.5+math.sin(a)*0.45,0)
+        local b=0.4+0.6*math.abs(math.sin(a))
+        dot.BackgroundColor3=Color3.fromRGB(math.floor(b*255),math.floor(b*255),math.floor(b*255))
     end
 end)
 
--- ── LOADING SEQUENCE FUNCTION ────────────────────────────────
-local LOAD_STEPS = {
-    {t="Connecting to AuthX servers...", p=0.10},
-    {t="Validating license signature...",p=0.28},
-    {t="Decrypting module payloads...",  p=0.45},
-    {t="Injecting render hooks...",      p=0.60},
-    {t="Loading ESP engine...",          p=0.72},
-    {t="Wiring aimbot systems...",       p=0.83},
-    {t="Calibrating ragebot...",         p=0.91},
-    {t="Suite ready.",                   p=1.00},
+local LOAD_STEPS={
+    {t="Connecting to AuthX servers...",    p=0.10},
+    {t="Validating license signature...",   p=0.28},
+    {t="Decrypting module payloads...",     p=0.45},
+    {t="Injecting render hooks...",         p=0.60},
+    {t="Loading ESP engine...",             p=0.72},
+    {t="Wiring aimbot systems...",          p=0.83},
+    {t="Calibrating ragebot...",            p=0.91},
+    {t="Suite ready.",                      p=1.00},
 }
-
 local function runLoadSequence(onComplete)
     LoadOverlay.Visible=true
-    local ti=TweenInfo.new(0.3,Enum.EasingStyle.Quad,Enum.EasingDirection.Out)
     local function stepTo(idx)
-        if idx>#LOAD_STEPS then task.delay(0.3,onComplete) return end
+        if idx>#LOAD_STEPS then task.delay(0.4,onComplete) return end
         local s=LOAD_STEPS[idx]
         stepLbl.Text=s.t
-        TweenService:Create(pBarFill,TweenInfo.new(0.35,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),
+        TweenService:Create(pBarFill,TweenInfo.new(0.32,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),
             {Size=UDim2.new(s.p,0,1,0)}):Play()
-        -- Shimmer sweep
         shimmer.Position=UDim2.new(-0.3,0,0,0)
-        TweenService:Create(shimmer,TweenInfo.new(0.35,Enum.EasingStyle.Quad),
-            {Position=UDim2.new(1.3,0,0,0)}):Play()
-        task.delay(0.38,function() stepTo(idx+1) end)
+        TweenService:Create(shimmer,TweenInfo.new(0.32),{Position=UDim2.new(1.3,0,0,0)}):Play()
+        task.delay(0.36,function() stepTo(idx+1) end)
     end
     stepTo(1)
 end
 
--- ── KEYAUTH VERIFY ───────────────────────────────────────────
-local function verifyKey(key, onSuccess, onFail)
-    local url = ("https://keyauth.win/api/1.2/?type=license&key=%s&name=%s&ownerid=%s&ver=%s")
-        :format(key, KA.name, KA.ownerid, KA.version)
-    local ok, result = pcall(function()
-        -- try syn / request / http_request depending on executor
-        local fn = syn and syn.request or request or http_request or (http and http.request)
-        if not fn then error("no_http") end
-        return fn({Url=url, Method="GET"})
-    end)
-    if not ok then
-        -- fallback: try HttpService (won't work in-game normally but keeps compatibility)
-        ok, result = pcall(function()
-            return {Body=HttpService:GetAsync(url)}
-        end)
+-- ── KEYAUTH: INIT → LICENSE (two-step, session ID fixed) ─────
+local function httpRequest(url, method)
+    method = method or "GET"
+    local fn = (syn and syn.request)
+             or (http_request)
+             or (request)
+             or (http and http.request)
+    if fn then
+        local ok,res=pcall(fn,{Url=url,Method=method})
+        if ok and res then return res.Body end
     end
-    if not ok then onFail("HTTP function unavailable in this executor.") return end
-    local parsed, parseErr = pcall(function()
-        return HttpService:JSONDecode(result.Body)
-    end)
-    if not parsed then onFail("Response parse error.") return end
-    local data = parseErr -- JSONDecode returns value as 2nd arg from pcall
-    if type(data)=="table" and (data.success==true or data.message=="succeeded") then
-        onSuccess(data)
-    else
-        local msg = (type(data)=="table" and data.message) or "Invalid key."
-        onFail(msg)
-    end
+    -- fallback
+    local ok2,res2=pcall(function() return game:GetService("HttpService"):GetAsync(url) end)
+    if ok2 then return res2 end
+    return nil
 end
 
--- ── GATE INPUT HANDLING ──────────────────────────────────────
--- Highlight border on focus
-keyInput.Focused:Connect(function()
-    TweenService:Create(inputBox_bg,TweenInfo.new(0.15),{BackgroundColor3=PAL.bg3}):Play()
-    stroke(inputBox_bg,PAL.borderHi,1)
-end)
-keyInput.FocusLost:Connect(function()
-    TweenService:Create(inputBox_bg,TweenInfo.new(0.15),{BackgroundColor3=PAL.bg2}):Play()
-    stroke(inputBox_bg,PAL.border,1)
-end)
+local function verifyKey(key, onSuccess, onFail)
+    task.spawn(function()
+        -- STEP 1: init — get a session ID
+        local initUrl = ("https://keyauth.win/api/1.2/?type=init&ver=%s&name=%s&ownerid=%s"):format(
+            KA.version, KA.name, KA.ownerid)
+        local initBody = httpRequest(initUrl)
+        if not initBody then
+            onFail("Could not reach KeyAuth servers.") return
+        end
+        local initOk, initData = pcall(function()
+            return HttpService:JSONDecode(initBody)
+        end)
+        if not initOk or type(initData)~="table" then
+            onFail("Init response parse error.") return
+        end
+        if not initData.sessionid then
+            -- some builds return message on failure
+            local msg = initData.message or "Init failed — check app credentials."
+            onFail(msg) return
+        end
+        local sessionId = initData.sessionid
 
+        -- STEP 2: license check with session ID
+        local licUrl = ("https://keyauth.win/api/1.2/?type=license&key=%s&sessionid=%s&name=%s&ownerid=%s"):format(
+            key, sessionId, KA.name, KA.ownerid)
+        local licBody = httpRequest(licUrl)
+        if not licBody then
+            onFail("License check request failed.") return
+        end
+        local licOk, licData = pcall(function()
+            return HttpService:JSONDecode(licBody)
+        end)
+        if not licOk or type(licData)~="table" then
+            onFail("License response parse error.") return
+        end
+        if licData.success==true or licData.message=="succeeded" then
+            onSuccess(licData)
+        else
+            onFail(licData.message or "Invalid license key.")
+        end
+    end)
+end
+
+-- ── VERIFY LOGIC ─────────────────────────────────────────────
 local verifying=false
 local function attemptVerify()
     if verifying then return end
     local key=keyInput.Text:match("^%s*(.-)%s*$")
     if #key<4 then
         statusLbl.Text="⚠  Please enter a valid key."
-        statusLbl.TextColor3=PAL.gold
-        return
+        statusLbl.TextColor3=PAL.gold return
     end
     verifying=true
     verifyBtn.Text="VERIFYING..."
     verifyBtn.BackgroundColor3=PAL.bg3
     verifyBtn.TextColor3=PAL.textM
-    statusLbl.Text="Contacting KeyAuth servers..."
+    statusLbl.Text="Initializing session..."
     statusLbl.TextColor3=PAL.textM
 
-    task.spawn(function()
-        verifyKey(key, function(data)
-            statusLbl.Text="✓  Key accepted."
+    verifyKey(key,
+        function()
+            statusLbl.Text="✓  License accepted."
             statusLbl.TextColor3=PAL.green
-            task.delay(0.5, function()
-                -- Fade gate out, show load overlay
-                TweenService:Create(GateFrame,TweenInfo.new(0.4,Enum.EasingStyle.Quad,Enum.EasingDirection.In),
-                    {BackgroundTransparency=0.6}):Play()
-                task.delay(0.2, function()
+            task.delay(0.4,function()
+                TweenService:Create(GateFrame,TweenInfo.new(0.35,Enum.EasingStyle.Quad,Enum.EasingDirection.In),
+                    {BackgroundTransparency=0.5}):Play()
+                task.delay(0.15,function()
                     runLoadSequence(function()
                         spinConn:Disconnect()
                         GateFrame:Destroy()
-                        loadMainUI()  -- defined below
+                        loadMainUI()
                     end)
                 end)
             end)
-        end, function(msg)
+        end,
+        function(msg)
             verifying=false
             statusLbl.Text="✗  "..msg
             statusLbl.TextColor3=PAL.red
             verifyBtn.Text="VERIFY KEY"
             verifyBtn.BackgroundColor3=PAL.accent
             verifyBtn.TextColor3=PAL.bg0
-            -- shake animation
+            -- shake
             local orig=GateFrame.Position
             for i=1,6 do
                 task.delay(i*0.05,function()
-                    local shift=i%2==0 and -5 or 5
-                    GateFrame.Position=UDim2.new(orig.X.Scale,orig.X.Offset+shift,orig.Y.Scale,orig.Y.Offset)
+                    local sh=i%2==0 and -5 or 5
+                    GateFrame.Position=UDim2.new(orig.X.Scale,orig.X.Offset+sh,orig.Y.Scale,orig.Y.Offset)
                 end)
             end
             task.delay(0.36,function() GateFrame.Position=orig end)
-        end)
-    end)
+        end
+    )
 end
-
 verifyBtn.MouseButton1Click:Connect(attemptVerify)
 keyInput.FocusLost:Connect(function(enter) if enter then attemptVerify() end end)
 
--- ── Drag gate ────────────────────────────────────────────────
+-- Gate drag
 do
     local drag,ds,sp2=false,nil,nil
     GateFrame.InputBegan:Connect(function(i)
@@ -482,13 +446,12 @@ do
 end
 
 -- ████████████████████████████████████████████████████████████
--- ── MAIN UI (loaded post-auth) ───────────────────────────────
+-- ── MAIN UI ──────────────────────────────────────────────────
 -- ████████████████████████████████████████████████████████████
 function loadMainUI()
     local ScreenGui=inst("ScreenGui",{Name="AuthX_v35",ResetOnSpawn=false,ZIndexBehavior=Enum.ZIndexBehavior.Sibling})
     ScreenGui.Parent=CoreGui
 
-    -- Systems
     local origSizes={}
     local function applyHitboxes()
         if not CFG.HitboxEnabled then return end
@@ -585,66 +548,45 @@ function loadMainUI()
         end
     end
 
-    -- ── RAGEBOT ──────────────────────────────────────────────
+    -- Ragebot
     local rbRunning=false
-    local rbConn=nil
-    local function stopRagebot()
-        rbRunning=false
-        if rbConn then rbConn:Disconnect() rbConn=nil end
-    end
+    local function stopRagebot() rbRunning=false end
     local function startRagebot()
-        if rbRunning then return end
-        rbRunning=true
+        if rbRunning then return end rbRunning=true
         task.spawn(function()
             while rbRunning and CFG.RagebotEnabled do
                 local targets=getAllTargets()
                 if #targets==0 then task.wait(0.2) continue end
                 for _,t in ipairs(targets) do
                     if not rbRunning or not CFG.RagebotEnabled then break end
-                    -- teleport to target
-                    local char=LocalPlayer.Character
-                    if not char then break end
-                    local root=char:FindFirstChild("HumanoidRootPart")
-                    if not root then break end
-                    -- teleport slightly behind target
-                    local tRoot=t.root
-                    local offset=tRoot.CFrame.LookVector*-3+Vector3.new(0,0,0)
-                    root.CFrame=CFrame.new(tRoot.Position+offset)*CFrame.Angles(0,math.pi,0)
+                    local char=LocalPlayer.Character if not char then break end
+                    local root=char:FindFirstChild("HumanoidRootPart") if not root then break end
+                    local offset=t.root.CFrame.LookVector*-3
+                    root.CFrame=CFrame.new(t.root.Position+offset)*CFrame.Angles(0,math.pi,0)
                     task.wait(0.08)
-                    -- aim at their head and auto-shoot
-                    local head,_,_,_=getCharParts(t.char)
-                    local aimPart=head or t.root
-                    if aimPart then
-                        Camera.CFrame=CFrame.new(Camera.CFrame.Position,aimPart.Position)
-                    end
-                    -- fire shots
-                    local mouse2=LocalPlayer:GetMouse()
+                    local head=getCharParts(t.char)
+                    Camera.CFrame=CFrame.new(Camera.CFrame.Position,(head or t.root).Position)
+                    local m2=LocalPlayer:GetMouse()
                     for s=1,CFG.RagebotShots do
-                        pcall(function() mouse2:Button1Down() end)
-                        task.wait(0.04)
-                        pcall(function() mouse2:Button1Up() end)
-                        task.wait(CFG.RagebotDelay)
+                        pcall(function() m2:Button1Down() end) task.wait(0.04)
+                        pcall(function() m2:Button1Up() end) task.wait(CFG.RagebotDelay)
                         if not rbRunning then break end
                     end
-                    -- wait for target to die or small delay
                     local waited=0
-                    while rbRunning and t.hum and t.hum.Health>0 and waited<3 do
-                        task.wait(0.1) waited=waited+0.1
-                    end
-                    task.wait(0.12)
+                    while rbRunning and t.hum and t.hum.Health>0 and waited<3 do task.wait(0.1) waited=waited+0.1 end
+                    task.wait(0.1)
                 end
                 task.wait(0.1)
             end
         end)
     end
 
-    -- ── FOV CIRCLE ───────────────────────────────────────────
+    -- FOV
     local fovCircle=Drawing.new("Circle")
     fovCircle.Radius=CFG.FOVRadius fovCircle.Color=Color3.fromRGB(255,255,255)
-    fovCircle.Thickness=1 fovCircle.NumSides=80 fovCircle.Filled=false
-    fovCircle.Visible=CFG.FOVVisible
+    fovCircle.Thickness=1 fovCircle.NumSides=80 fovCircle.Filled=false fovCircle.Visible=CFG.FOVVisible
 
-    -- ── ESP POOL ─────────────────────────────────────────────
+    -- ESP
     local function newDraw(t,p) local d=Drawing.new(t) for k,v in pairs(p) do d[k]=v end return d end
     local espPool={}
     local function getESP(plr)
@@ -679,10 +621,10 @@ function loadMainUI()
     end
     local function drawCorners(e,x,y,w,h)
         local cL=math.floor(math.min(w,h)*0.25) local c=CFG.BoxColor
-        e.cTL.From=Vector2.new(x,y+cL)       e.cTL.To=Vector2.new(x,y)       e.cTL.Color=c e.cTL.Visible=true
-        e.cTR.From=Vector2.new(x+w-cL,y)     e.cTR.To=Vector2.new(x+w,y)     e.cTR.Color=c e.cTR.Visible=true
-        e.cBL.From=Vector2.new(x,y+h-cL)     e.cBL.To=Vector2.new(x,y+h)     e.cBL.Color=c e.cBL.Visible=true
-        e.cBR.From=Vector2.new(x+w,y+h-cL)   e.cBR.To=Vector2.new(x+w,y+h)   e.cBR.Color=c e.cBR.Visible=true
+        e.cTL.From=Vector2.new(x,y+cL)     e.cTL.To=Vector2.new(x,y)       e.cTL.Color=c e.cTL.Visible=true
+        e.cTR.From=Vector2.new(x+w-cL,y)   e.cTR.To=Vector2.new(x+w,y)     e.cTR.Color=c e.cTR.Visible=true
+        e.cBL.From=Vector2.new(x,y+h-cL)   e.cBL.To=Vector2.new(x,y+h)     e.cBL.Color=c e.cBL.Visible=true
+        e.cBR.From=Vector2.new(x+w,y+h-cL) e.cBR.To=Vector2.new(x+w,y+h)   e.cBR.Color=c e.cBR.Visible=true
     end
     local function updateESPColors()
         for _,e in pairs(espPool) do
@@ -694,25 +636,21 @@ function loadMainUI()
 
     -- ── MAIN FRAME ───────────────────────────────────────────
     local Main=inst("Frame",{
-        Name="Main",Size=UDim2.new(0,720,0,500),
+        Name="Main", Size=UDim2.new(0,720,0,500),
         Position=UDim2.new(0.5,-360,0.5,-250),
-        BackgroundColor3=PAL.bg0,BorderSizePixel=0,
+        BackgroundColor3=PAL.bg0, BorderSizePixel=0,
     },ScreenGui)
-    corner(Main,14)
-    stroke(Main,PAL.border,1)
-    -- subtle bg gradient
-    inst("UIGradient",{
-        Color=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(10,10,10)),ColorSequenceKeypoint.new(1,PAL.bg0)}),
-        Rotation=150
-    },Main)
-    -- top glow
-    local topGlow=inst("Frame",{Size=UDim2.new(1,0,0,1.5),BackgroundColor3=PAL.accent,BorderSizePixel=0,ZIndex=3},Main)
-    corner(topGlow,2)
+    corner(Main,14) stroke(Main,PAL.border,1)
+    inst("UIGradient",{Color=ColorSequence.new({
+        ColorSequenceKeypoint.new(0,Color3.fromRGB(10,10,10)),
+        ColorSequenceKeypoint.new(1,PAL.bg0)
+    }),Rotation=150},Main)
+    local topGlow2=inst("Frame",{Size=UDim2.new(1,0,0,1.5),BackgroundColor3=PAL.accent,BorderSizePixel=0,ZIndex=3},Main)
+    corner(topGlow2,2)
     inst("UIGradient",{Transparency=NumberSequence.new({
         NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(0.2,0),
         NumberSequenceKeypoint.new(0.8,0),NumberSequenceKeypoint.new(1,1)
-    })},topGlow)
-    -- Drag
+    })},topGlow2)
     local drag2,ds2,sp3=false,nil,nil
     Main.InputBegan:Connect(function(i)
         if i.UserInputType==Enum.UserInputType.MouseButton1 then drag2=true ds2=i.Position sp3=Main.Position end
@@ -727,18 +665,18 @@ function loadMainUI()
         end
     end)
 
-    -- ── TOPBAR ───────────────────────────────────────────────
+    -- Topbar
     local Topbar=inst("Frame",{Size=UDim2.new(1,0,0,46),BackgroundColor3=PAL.bg1,BorderSizePixel=0,ZIndex=2},Main)
-    corner(Topbar,14)
-    inst("UIStroke",{Color=PAL.border,Thickness=1},Topbar)
+    corner(Topbar,14) inst("UIStroke",{Color=PAL.border,Thickness=1},Topbar)
     lbl(Topbar,{Text="AuthX",Font=Enum.Font.GothamBold,TextSize=16,TextColor3=PAL.textP,
-        Size=UDim2.new(0,80,1,0),Position=UDim2.new(0,18,0,0),ZIndex=3})
-    lbl(Topbar,{Text="v3.5",Font=Enum.Font.Gotham,TextSize=10,TextColor3=PAL.textM,
-        Size=UDim2.new(0,40,0,14),Position=UDim2.new(0,64,0,18),ZIndex=3})
+        Size=UDim2.new(0,60,1,0),Position=UDim2.new(0,18,0,0),ZIndex=3})
+    lbl(Topbar,{Text="v3.5",Font=Enum.Font.Gotham,TextSize=9,TextColor3=PAL.textM,
+        Size=UDim2.new(0,40,0,14),Position=UDim2.new(0,62,0.5,-2),ZIndex=3})
     local sDot=inst("Frame",{Size=UDim2.new(0,7,0,7),AnchorPoint=Vector2.new(0,0.5),
         Position=UDim2.new(0,112,0.5,0),BackgroundColor3=PAL.green,BorderSizePixel=0,ZIndex=3},Topbar)
     corner(sDot,8)
-    lbl(Topbar,{Text="AUTHENTICATED",Font=Enum.Font.GothamBold,TextSize=9,TextColor3=Color3.fromRGB(55,215,95),
+    lbl(Topbar,{Text="AUTHENTICATED",Font=Enum.Font.GothamBold,TextSize=9,
+        TextColor3=Color3.fromRGB(55,215,95),
         Size=UDim2.new(0,110,0,20),Position=UDim2.new(0,124,0.5,-10),ZIndex=3})
     local closeBtn=inst("TextButton",{Text="×",Size=UDim2.new(0,28,0,28),
         Position=UDim2.new(1,-38,0.5,-14),BackgroundColor3=PAL.bg3,BorderSizePixel=0,
@@ -748,25 +686,22 @@ function loadMainUI()
     closeBtn.MouseEnter:Connect(function() closeBtn.TextColor3=PAL.red end)
     closeBtn.MouseLeave:Connect(function() closeBtn.TextColor3=PAL.textS end)
 
-    -- ── LEFT NAV ─────────────────────────────────────────────
+    -- Nav + content
     local tabNames={"AIMBOT","TRIGGERBOT","ESP","MOVEMENT","RAGEBOT","MISC"}
-    local tabPages={}
-    local tabBtns={}
+    local tabPages={} local tabBtns={}
     local NavBar=inst("Frame",{Size=UDim2.new(0,126,1,-54),Position=UDim2.new(0,0,0,54),
         BackgroundColor3=PAL.bg1,BorderSizePixel=0},Main)
     inst("UIStroke",{Color=PAL.border,Thickness=1},NavBar)
     inst("UIListLayout",{SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0,2)},NavBar)
     inst("UIPadding",{PaddingTop=UDim.new(0,10),PaddingLeft=UDim.new(0,8),PaddingRight=UDim.new(0,8)},NavBar)
-    -- Content area
     local ContentArea=inst("Frame",{Size=UDim2.new(1,-126,1,-54),Position=UDim2.new(0,126,0,54),
         BackgroundColor3=PAL.bg0,BorderSizePixel=0},Main)
     inst("UIStroke",{Color=PAL.border,Thickness=1},ContentArea)
-    -- Quick status panel
     local QuickPanel=inst("Frame",{Size=UDim2.new(0,162,1,0),Position=UDim2.new(1,-162,0,0),
         BackgroundColor3=PAL.bg1,BorderSizePixel=0},ContentArea)
     inst("UIStroke",{Color=PAL.border,Thickness=1},QuickPanel)
     lbl(QuickPanel,{Text="QUICK STATUS",Font=Enum.Font.GothamBold,TextSize=9,TextColor3=PAL.textM,
-        Size=UDim2.new(1,-16,0,16),Position=UDim2.new(0,8,0,12),TextXAlignment=Enum.TextXAlignment.Left})
+        Size=UDim2.new(1,-16,0,16),Position=UDim2.new(0,8,0,12)})
     inst("UIListLayout",{SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0,3)},QuickPanel)
     inst("UIPadding",{PaddingTop=UDim.new(0,36),PaddingLeft=UDim.new(0,8),PaddingRight=UDim.new(0,8)},QuickPanel)
     local quickPills={}
@@ -778,8 +713,8 @@ function loadMainUI()
             TextColor3=CFG[cfgKey] and PAL.textP or PAL.textM,
             Size=UDim2.new(1,-30,1,0),Position=UDim2.new(0,10,0,0)})
         local dot2=inst("Frame",{Size=UDim2.new(0,7,0,7),AnchorPoint=Vector2.new(0.5,0.5),
-            Position=UDim2.new(1,-14,0.5,0),BackgroundColor3=CFG[cfgKey] and PAL.accent or PAL.textM,
-            BorderSizePixel=0},pill)
+            Position=UDim2.new(1,-14,0.5,0),
+            BackgroundColor3=CFG[cfgKey] and PAL.accent or PAL.textM,BorderSizePixel=0},pill)
         corner(dot2,8)
         local function sync()
             local on=CFG[cfgKey]
@@ -788,25 +723,18 @@ function loadMainUI()
             pill.BackgroundColor3=on and PAL.bg3 or PAL.bg2
         end
         pill.MouseButton1Click:Connect(function()
-            CFG[cfgKey]=not CFG[cfgKey]
-            sync()
-            if cfgKey=="RagebotEnabled" then
-                if CFG.RagebotEnabled then startRagebot() else stopRagebot() end
-            end
+            CFG[cfgKey]=not CFG[cfgKey] sync()
+            if cfgKey=="RagebotEnabled" then if CFG.RagebotEnabled then startRagebot() else stopRagebot() end end
         end)
-        pill.Parent=QuickPanel
-        quickPills[cfgKey]=sync
-        return pill
+        pill.Parent=QuickPanel quickPills[cfgKey]=sync
     end
     makeQuickPill("Aimbot","AimEnabled") makeQuickPill("Silent Aim","SilentEnabled")
     makeQuickPill("Triggerbot","TrigEnabled") makeQuickPill("ESP","ESPEnabled")
     makeQuickPill("Wallhack","ESPBoxes") makeQuickPill("No Recoil","NoRecoil")
-    makeQuickPill("Ragebot","RagebotEnabled")
-    makeQuickPill("Speed Hack","SpeedEnabled") makeQuickPill("Fly Hack","FlyEnabled")
-    makeQuickPill("No Clip","NoclipEnabled") makeQuickPill("Inf. Jump","InfJumpEnabled")
-    makeQuickPill("Hitbox Ext.","HitboxEnabled")
+    makeQuickPill("Ragebot","RagebotEnabled") makeQuickPill("Speed Hack","SpeedEnabled")
+    makeQuickPill("Fly Hack","FlyEnabled") makeQuickPill("No Clip","NoclipEnabled")
+    makeQuickPill("Inf. Jump","InfJumpEnabled") makeQuickPill("Hitbox Ext.","HitboxEnabled")
 
-    -- Scroll panel area
     local PanelArea=inst("Frame",{Size=UDim2.new(1,-162,1,0),BackgroundTransparency=1,BorderSizePixel=0},ContentArea)
     local function makePage()
         local sf=Instance.new("ScrollingFrame")
@@ -827,25 +755,21 @@ function loadMainUI()
             PaddingLeft=UDim.new(0,12),PaddingRight=UDim.new(0,12)},card)
         return card
     end
-    local function mkCardHeader(parent,text,order)
-        local f=inst("Frame",{Size=UDim2.new(1,0,0,20),BackgroundTransparency=1,
-            BorderSizePixel=0,LayoutOrder=order or 0},parent)
+    local function mkCardHdr(parent,text,order)
+        local f=inst("Frame",{Size=UDim2.new(1,0,0,20),BackgroundTransparency=1,BorderSizePixel=0,LayoutOrder=order or 0},parent)
         lbl(f,{Text=text,Font=Enum.Font.GothamBold,TextSize=9,TextColor3=PAL.textM,Size=UDim2.new(1,0,1,0)})
         return f
     end
     local function mkRow(parent,order)
-        return inst("Frame",{Size=UDim2.new(1,0,0,32),BackgroundTransparency=1,
-            BorderSizePixel=0,LayoutOrder=order or 0},parent)
+        return inst("Frame",{Size=UDim2.new(1,0,0,32),BackgroundTransparency=1,BorderSizePixel=0,LayoutOrder=order or 0},parent)
     end
     local function mkToggleRow(parent,labelText,cfgKey,order,onChange)
         local row=mkRow(parent,order)
-        lbl(row,{Text=labelText,Font=Enum.Font.Gotham,TextSize=12,TextColor3=PAL.textS,
-            Size=UDim2.new(1,-52,1,0)})
+        lbl(row,{Text=labelText,Font=Enum.Font.Gotham,TextSize=12,TextColor3=PAL.textS,Size=UDim2.new(1,-52,1,0)})
         local track=inst("Frame",{Size=UDim2.new(0,34,0,18),Position=UDim2.new(1,-34,0.5,-9),
             BackgroundColor3=CFG[cfgKey] and PAL.accent or PAL.bg4,BorderSizePixel=0},row)
         corner(track,10)
-        local thumb=inst("Frame",{
-            Size=UDim2.new(0,12,0,12),
+        local thumb=inst("Frame",{Size=UDim2.new(0,12,0,12),
             Position=CFG[cfgKey] and UDim2.new(0,19,0,3) or UDim2.new(0,3,0,3),
             BackgroundColor3=CFG[cfgKey] and PAL.bg0 or PAL.textM,BorderSizePixel=0},track)
         corner(thumb,8)
@@ -861,22 +785,17 @@ function loadMainUI()
         end)
     end
     local function mkSliderRow(parent,labelText,cfgKey,minV,maxV,fmt,order,onChange)
-        local row=inst("Frame",{Size=UDim2.new(1,0,0,48),BackgroundTransparency=1,
-            BorderSizePixel=0,LayoutOrder=order or 0},parent)
-        lbl(row,{Text=labelText,Font=Enum.Font.Gotham,TextSize=12,TextColor3=PAL.textS,
-            Size=UDim2.new(0.6,0,0,20),Position=UDim2.new(0,0,0,2)})
+        local row=inst("Frame",{Size=UDim2.new(1,0,0,48),BackgroundTransparency=1,BorderSizePixel=0,LayoutOrder=order or 0},parent)
+        lbl(row,{Text=labelText,Font=Enum.Font.Gotham,TextSize=12,TextColor3=PAL.textS,Size=UDim2.new(0.6,0,0,20),Position=UDim2.new(0,0,0,2)})
         local valLbl2=lbl(row,{Text=fmt(CFG[cfgKey]),Font=Enum.Font.GothamBold,TextSize=11,
-            TextColor3=PAL.accentD,Size=UDim2.new(0.4,0,0,20),Position=UDim2.new(0.6,0,0,2),
-            TextXAlignment=Enum.TextXAlignment.Right})
-        local tBg3=inst("Frame",{Size=UDim2.new(1,0,0,3),Position=UDim2.new(0,0,0,28),
-            BackgroundColor3=PAL.bg4,BorderSizePixel=0},row)
+            TextColor3=PAL.accentD,Size=UDim2.new(0.4,0,0,20),Position=UDim2.new(0.6,0,0,2),TextXAlignment=Enum.TextXAlignment.Right})
+        local tBg3=inst("Frame",{Size=UDim2.new(1,0,0,3),Position=UDim2.new(0,0,0,28),BackgroundColor3=PAL.bg4,BorderSizePixel=0},row)
         corner(tBg3,4)
         local pct3=math.clamp((CFG[cfgKey]-minV)/(maxV-minV),0,1)
         local fl3=inst("Frame",{Size=UDim2.new(pct3,0,1,0),BackgroundColor3=PAL.accent,BorderSizePixel=0},tBg3)
         corner(fl3,4)
         inst("UIGradient",{Color=ColorSequence.new({
-            ColorSequenceKeypoint.new(0,Color3.fromRGB(140,140,140)),
-            ColorSequenceKeypoint.new(1,Color3.fromRGB(255,255,255))
+            ColorSequenceKeypoint.new(0,Color3.fromRGB(140,140,140)),ColorSequenceKeypoint.new(1,Color3.fromRGB(255,255,255))
         }),Rotation=90},fl3)
         local th3=inst("Frame",{Size=UDim2.new(0,13,0,13),AnchorPoint=Vector2.new(0.5,0.5),
             Position=UDim2.new(pct3,0,0.5,0),BackgroundColor3=PAL.accent,BorderSizePixel=0,ZIndex=3},tBg3)
@@ -899,8 +818,7 @@ function loadMainUI()
         local row=mkRow(parent,order) row.Size=UDim2.new(1,0,0,30)
         lbl(row,{Text=labelText,Font=Enum.Font.Gotham,TextSize=12,TextColor3=PAL.textS,Size=UDim2.new(0.55,0,1,0)})
         local sel2=inst("TextButton",{Size=UDim2.new(0.42,0,0,22),Position=UDim2.new(0.57,0,0.5,-11),
-            BackgroundColor3=PAL.bg4,BorderSizePixel=0,Text=CFG[cfgKey],Font=Enum.Font.Gotham,
-            TextSize=10,TextColor3=PAL.textP},row)
+            BackgroundColor3=PAL.bg4,BorderSizePixel=0,Text=CFG[cfgKey],Font=Enum.Font.Gotham,TextSize=10,TextColor3=PAL.textP},row)
         corner(sel2,5) stroke(sel2,PAL.border)
         local open2=false local dd2
         sel2.MouseButton1Click:Connect(function()
@@ -921,10 +839,9 @@ function loadMainUI()
         end)
     end
 
-    -- ── BUILD PAGES ──────────────────────────────────────────
-    -- PAGE 1: AIMBOT
+    -- Pages
     local p1=makePage() tabPages[1]=p1
-    local c1a=mkCard(p1,1) mkCardHeader(c1a,"AIMBOT",0)
+    local c1a=mkCard(p1,1) mkCardHdr(c1a,"AIMBOT",0)
     mkToggleRow(c1a,"Enable Aimbot","AimEnabled",1)
     mkToggleRow(c1a,"Wall Check","WallCheck",2)
     mkToggleRow(c1a,"Team Check","TeamCheck",3)
@@ -933,31 +850,29 @@ function loadMainUI()
     mkSliderRow(c1a,"FOV Radius","FOVRadius",30,500,function(v) return math.floor(v).."px" end,6)
     mkSliderRow(c1a,"Smoothness","Smoothness",0.01,1.0,function(v) return math.floor(v*100).."%" end,7)
     mkSliderRow(c1a,"Prediction","Prediction",0,0.5,function(v) return ("%.2f"):format(v) end,8)
-    local c1b=mkCard(p1,2) mkCardHeader(c1b,"SILENT AIM",0)
+    local c1b=mkCard(p1,2) mkCardHdr(c1b,"SILENT AIM",0)
     mkToggleRow(c1b,"Enable Silent Aim","SilentEnabled",1)
     mkSliderRow(c1b,"Silent FOV","SilentFOV",5,180,function(v) return math.floor(v).."px" end,2)
     mkSliderRow(c1b,"Hit Chance","SilentChance",1,100,function(v) return math.floor(v).."%" end,3)
-    local c1c=mkCard(p1,3) mkCardHeader(c1c,"RECOIL & SPREAD",0)
+    local c1c=mkCard(p1,3) mkCardHdr(c1c,"RECOIL & SPREAD",0)
     mkToggleRow(c1c,"No Recoil","NoRecoil",1,function(v) if not v and recoilConn then recoilConn:Disconnect() recoilConn=nil else enableNoRecoil() end end)
     mkToggleRow(c1c,"No Spread","NoSpread",2)
     mkSliderRow(c1c,"Recoil Strength","RecoilStrength",0.1,1.0,function(v) return math.floor(v*100).."%" end,3)
-    local c1d=mkCard(p1,4) mkCardHeader(c1d,"HITBOX EXTENDER",0)
+    local c1d=mkCard(p1,4) mkCardHdr(c1d,"HITBOX EXTENDER",0)
     mkToggleRow(c1d,"Enable Hitbox","HitboxEnabled",1,function(v) if not v then restoreHitboxes() end end)
     mkSliderRow(c1d,"Head Scale","HitboxHead",1.0,5.0,function(v) return ("%.1fx"):format(v) end,2)
     mkSliderRow(c1d,"Body Scale","HitboxBody",1.0,5.0,function(v) return ("%.1fx"):format(v) end,3)
     mkSliderRow(c1d,"Limb Scale","HitboxLimbs",1.0,5.0,function(v) return ("%.1fx"):format(v) end,4)
 
-    -- PAGE 2: TRIGGERBOT
     local p2=makePage() tabPages[2]=p2
-    local c2a=mkCard(p2,1) mkCardHeader(c2a,"TRIGGERBOT",0)
+    local c2a=mkCard(p2,1) mkCardHdr(c2a,"TRIGGERBOT",0)
     mkToggleRow(c2a,"Enable Triggerbot","TrigEnabled",1)
     mkToggleRow(c2a,"Quick Scope","TrigQuickScope",2)
     mkSliderRow(c2a,"Reaction Delay","TrigDelay",0,0.3,function(v) return math.floor(v*1000).."ms" end,3)
     mkSliderRow(c2a,"Burst Time","TrigBurst",0,0.5,function(v) return math.floor(v*1000).."ms" end,4)
 
-    -- PAGE 3: ESP
     local p3=makePage() tabPages[3]=p3
-    local c3a=mkCard(p3,1) mkCardHeader(c3a,"PLAYER ESP",0)
+    local c3a=mkCard(p3,1) mkCardHdr(c3a,"PLAYER ESP",0)
     mkToggleRow(c3a,"Enable ESP","ESPEnabled",1)
     mkToggleRow(c3a,"Corner Boxes","ESPBoxes",2)
     mkToggleRow(c3a,"Name Tags","ESPNames",3)
@@ -967,9 +882,8 @@ function loadMainUI()
     mkToggleRow(c3a,"Head Dot","ESPHeadDot",7)
     mkSliderRow(c3a,"Max Distance","ESPMaxDist",50,2000,function(v) return math.floor(v).."m" end,8)
 
-    -- PAGE 4: MOVEMENT
     local p4=makePage() tabPages[4]=p4
-    local c4a=mkCard(p4,1) mkCardHeader(c4a,"SPEED HACK",0)
+    local c4a=mkCard(p4,1) mkCardHdr(c4a,"SPEED HACK",0)
     mkToggleRow(c4a,"Enable Speed","SpeedEnabled",1,function(v)
         local char=LocalPlayer.Character
         if char then local hum=char:FindFirstChildOfClass("Humanoid") if hum then hum.WalkSpeed=v and 16*CFG.SpeedMult or 16 end end
@@ -980,61 +894,44 @@ function loadMainUI()
             if char then local hum=char:FindFirstChildOfClass("Humanoid") if hum then hum.WalkSpeed=16*v end end
         end
     end)
-    local c4b=mkCard(p4,2) mkCardHeader(c4b,"FLY HACK",0)
+    local c4b=mkCard(p4,2) mkCardHdr(c4b,"FLY HACK",0)
     mkToggleRow(c4b,"Enable Fly","FlyEnabled",1,function(v) setFly(v) end)
     mkToggleRow(c4b,"Noclip Mode","NoclipEnabled",2,function(v) setNoclip(v) end)
     mkSliderRow(c4b,"Fly Speed","FlySpeed",5,200,function(v) return math.floor(v).." wu/s" end,3)
-    local c4c=mkCard(p4,3) mkCardHeader(c4c,"JUMP",0)
+    local c4c=mkCard(p4,3) mkCardHdr(c4c,"JUMP",0)
     mkToggleRow(c4c,"Infinite Jump","InfJumpEnabled",1,function() setupInfJump() end)
     mkToggleRow(c4c,"Bunny Hop","BhopEnabled",2)
     mkSliderRow(c4c,"Jump Count","JumpCount",1,99,function(v) return v>=99 and "INF" or tostring(math.floor(v)) end,3)
     mkSliderRow(c4c,"Jump Height","JumpHeight",1.0,5.0,function(v) return ("%.1fx"):format(v) end,4)
 
-    -- PAGE 5: RAGEBOT
     local p5=makePage() tabPages[5]=p5
-    local c5a=mkCard(p5,1) mkCardHeader(c5a,"RAGEBOT",0)
-    -- Red warning badge
+    local c5a=mkCard(p5,1) mkCardHdr(c5a,"RAGEBOT",0)
     local warnRow=inst("Frame",{Size=UDim2.new(1,0,0,28),BackgroundColor3=Color3.fromRGB(35,10,10),
         BorderSizePixel=0,LayoutOrder=1},c5a)
-    corner(warnRow,6)
-    inst("UIStroke",{Color=Color3.fromRGB(80,20,20),Thickness=1},warnRow)
-    lbl(warnRow,{Text="⚠  Rage mode teleports you to each target and executes.",
-        Font=Enum.Font.Gotham,TextSize=9,TextColor3=Color3.fromRGB(200,80,80),
-        Size=UDim2.new(1,-16,1,0),Position=UDim2.new(0,8,0,0),
-        TextXAlignment=Enum.TextXAlignment.Left})
-    mkToggleRow(c5a,"Enable Ragebot","RagebotEnabled",2,function(v)
-        if v then startRagebot() else stopRagebot() end
-    end)
+    corner(warnRow,6) inst("UIStroke",{Color=Color3.fromRGB(80,20,20),Thickness=1},warnRow)
+    lbl(warnRow,{Text="⚠  Teleports to each target and executes.",Font=Enum.Font.Gotham,TextSize=9,
+        TextColor3=Color3.fromRGB(200,80,80),Size=UDim2.new(1,-16,1,0),Position=UDim2.new(0,8,0,0)})
+    mkToggleRow(c5a,"Enable Ragebot","RagebotEnabled",2,function(v) if v then startRagebot() else stopRagebot() end end)
     mkToggleRow(c5a,"Team Check","TeamCheck",3)
     mkSliderRow(c5a,"Shot Delay","RagebotDelay",0.05,1.0,function(v) return math.floor(v*1000).."ms" end,4)
     mkSliderRow(c5a,"Shots Per Target","RagebotShots",1,10,function(v) return tostring(math.floor(v)) end,5)
-    local c5b=mkCard(p5,2) mkCardHeader(c5b,"TARGET CYCLE",0)
-    local cyc=mkRow(c5b,1)
-    lbl(cyc,{Text="Cycle Mode",Font=Enum.Font.Gotham,TextSize=12,TextColor3=PAL.textS,Size=UDim2.new(0.6,0,1,0)})
-    lbl(cyc,{Text="Auto (all players)",Font=Enum.Font.GothamBold,TextSize=10,TextColor3=PAL.accentD,
-        Size=UDim2.new(0.4,0,1,0),Position=UDim2.new(0.6,0,0,0),TextXAlignment=Enum.TextXAlignment.Right})
 
-    -- PAGE 6: MISC
     local p6=makePage() tabPages[6]=p6
-    local c6a=mkCard(p6,1) mkCardHeader(c6a,"SYSTEM",0)
+    local c6a=mkCard(p6,1) mkCardHdr(c6a,"SYSTEM",0)
     mkToggleRow(c6a,"Stream Proof","StreamProof",1)
-    local function mkKeybindRow(parent,labelText,keyStr,order)
+    local function mkKeyRow(parent,lText,kStr,order)
         local row=mkRow(parent,order)
-        lbl(row,{Text=labelText,Font=Enum.Font.Gotham,TextSize=12,TextColor3=PAL.textS,Size=UDim2.new(0.6,0,1,0)})
+        lbl(row,{Text=lText,Font=Enum.Font.Gotham,TextSize=12,TextColor3=PAL.textS,Size=UDim2.new(0.6,0,1,0)})
         local kb2=inst("TextButton",{Size=UDim2.new(0,80,0,20),Position=UDim2.new(1,-80,0.5,-10),
-            BackgroundColor3=PAL.bg4,BorderSizePixel=0,Text=keyStr,Font=Enum.Font.GothamBold,
-            TextSize=9,TextColor3=PAL.textP},row)
+            BackgroundColor3=PAL.bg4,BorderSizePixel=0,Text=kStr,Font=Enum.Font.GothamBold,TextSize=9,TextColor3=PAL.textP},row)
         corner(kb2,4) stroke(kb2,PAL.border)
     end
-    mkKeybindRow(c6a,"Toggle Menu","INSERT",2)
-    mkKeybindRow(c6a,"Unload / Panic","DEL",3)
-    mkKeybindRow(c6a,"Toggle Aimbot","RSHIFT",4)
-    mkKeybindRow(c6a,"Toggle ESP","F1",5)
-    mkKeybindRow(c6a,"Toggle Triggerbot","F2",6)
-    mkKeybindRow(c6a,"Toggle Silent Aim","F3",7)
-    mkKeybindRow(c6a,"Toggle Ragebot","F4",8)
+    mkKeyRow(c6a,"Toggle Menu","INSERT",2) mkKeyRow(c6a,"Panic Unload","DEL",3)
+    mkKeyRow(c6a,"Toggle Aimbot","RSHIFT",4) mkKeyRow(c6a,"Toggle ESP","F1",5)
+    mkKeyRow(c6a,"Toggle Triggerbot","F2",6) mkKeyRow(c6a,"Toggle Silent Aim","F3",7)
+    mkKeyRow(c6a,"Toggle Ragebot","F4",8)
 
-    -- ── NAV SWITCH ───────────────────────────────────────────
+    -- Nav
     local function switchTab(idx)
         for i,pg in ipairs(tabPages) do pg.Visible=(i==idx) end
         for i,btn3 in ipairs(tabBtns) do
@@ -1048,90 +945,68 @@ function loadMainUI()
         local btn3=inst("TextButton",{
             Size=UDim2.new(1,0,0,32),
             BackgroundColor3=i==1 and PAL.bg3 or Color3.fromRGB(0,0,0),
-            BackgroundTransparency=i==1 and 0 or 1,BorderSizePixel=0,
-            Text=name,Font=Enum.Font.GothamBold,TextSize=9,
+            BackgroundTransparency=i==1 and 0 or 1, BorderSizePixel=0,
+            Text=name, Font=Enum.Font.GothamBold, TextSize=9,
             TextColor3=i==1 and PAL.textP or (isRage and Color3.fromRGB(180,60,60) or PAL.textM),
-            AutoButtonColor=false,LayoutOrder=i,
+            AutoButtonColor=false, LayoutOrder=i,
         },NavBar)
         corner(btn3,6)
         btn3.MouseButton1Click:Connect(function() switchTab(i) end)
-        btn3.MouseEnter:Connect(function() if not tabPages[i].Visible then btn3.TextColor3=PAL.textS end end)
-        btn3.MouseLeave:Connect(function() if not tabPages[i].Visible then btn3.TextColor3=isRage and Color3.fromRGB(180,60,60) or PAL.textM end end)
         tabBtns[i]=btn3
     end
     tabPages[1].Visible=true
 
-    -- ── TRIGGERBOT STATE ─────────────────────────────────────
     local trigCD=false local mouse3=LocalPlayer:GetMouse()
 
-    -- ── MAIN RENDER LOOP ─────────────────────────────────────
     RunService:BindToRenderStep("AuthX_v35",Enum.RenderPriority.Camera.Value+1,function()
         local center=screenCenter()
         fovCircle.Position=center fovCircle.Visible=CFG.FOVVisible and CFG.AimEnabled
-        fovCircle.Radius=CFG.FOVRadius fovCircle.Color=CFG.FOVColor
-        -- Aimbot
+        fovCircle.Radius=CFG.FOVRadius
         if CFG.AimEnabled and UserInputService:IsMouseButtonPressed(CFG.AimKey) then
             local t=getBestTarget(CFG.FOVRadius)
             if t then
                 local vel=t.aimPart.AssemblyLinearVelocity or Vector3.zero
-                local pred=t.aimPart.Position+vel*CFG.Prediction
-                Camera.CFrame=Camera.CFrame:Lerp(CFrame.new(Camera.CFrame.Position,pred),CFG.Smoothness)
+                Camera.CFrame=Camera.CFrame:Lerp(CFrame.new(Camera.CFrame.Position,t.aimPart.Position+vel*CFG.Prediction),CFG.Smoothness)
             end
         end
-        -- Silent Aim
         if CFG.SilentEnabled and UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
             if math.random(1,100)<=CFG.SilentChance then
                 local t=getBestTarget(CFG.SilentFOV)
-                if t then
-                    local saved=Camera.CFrame
-                    Camera.CFrame=CFrame.new(Camera.CFrame.Position,t.aimPart.Position)
-                    task.defer(function() Camera.CFrame=saved end)
-                end
+                if t then local s=Camera.CFrame Camera.CFrame=CFrame.new(Camera.CFrame.Position,t.aimPart.Position) task.defer(function() Camera.CFrame=s end) end
             end
         end
-        -- Triggerbot
         if CFG.TrigEnabled and not trigCD then
             local ur=Camera:ScreenPointToRay(center.X,center.Y)
-            local rp3=RaycastParams.new()
-            rp3.FilterType=Enum.RaycastFilterType.Exclude
-            local lc=LocalPlayer.Character
-            rp3.FilterDescendantsInstances=lc and {lc} or {}
+            local rp3=RaycastParams.new() rp3.FilterType=Enum.RaycastFilterType.Exclude
+            local lc=LocalPlayer.Character rp3.FilterDescendantsInstances=lc and {lc} or {}
             local hit3=workspace:Raycast(ur.Origin,ur.Direction*1200,rp3)
             if hit3 and hit3.Instance then
-                local hp3=Players:GetPlayerFromCharacter(hit3.Instance.Parent)
-                         or Players:GetPlayerFromCharacter(hit3.Instance.Parent and hit3.Instance.Parent.Parent)
-                if hp3 and hp3~=LocalPlayer then
-                    if not (CFG.TeamCheck and hp3.Team==LocalPlayer.Team) then
-                        trigCD=true
-                        task.delay(CFG.TrigDelay,function()
-                            mouse3:Button1Down()
-                            task.delay(CFG.TrigBurst>0 and CFG.TrigBurst or 0.04,function()
-                                mouse3:Button1Up()
-                                task.delay(0.06,function() trigCD=false end)
-                            end)
+                local hp3=Players:GetPlayerFromCharacter(hit3.Instance.Parent) or Players:GetPlayerFromCharacter(hit3.Instance.Parent and hit3.Instance.Parent.Parent)
+                if hp3 and hp3~=LocalPlayer and not (CFG.TeamCheck and hp3.Team==LocalPlayer.Team) then
+                    trigCD=true
+                    task.delay(CFG.TrigDelay,function()
+                        mouse3:Button1Down()
+                        task.delay(CFG.TrigBurst>0 and CFG.TrigBurst or 0.04,function()
+                            mouse3:Button1Up() task.delay(0.06,function() trigCD=false end)
                         end)
-                    end
+                    end)
                 end
             end
         end
-        -- Hitboxes
         if CFG.HitboxEnabled then applyHitboxes() end
-        -- Speed
         if CFG.SpeedEnabled then
             local char=LocalPlayer.Character
             if char then local hum=char:FindFirstChildOfClass("Humanoid") if hum then hum.WalkSpeed=16*CFG.SpeedMult end end
         end
-        -- Bhop
         if CFG.BhopEnabled then
             local char=LocalPlayer.Character
             if char then
                 local hum=char:FindFirstChildOfClass("Humanoid")
-                if hum and hum:GetState()==Enum.HumanoidStateType.Landed then
-                    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then hum:ChangeState(Enum.HumanoidStateType.Jumping) end
+                if hum and hum:GetState()==Enum.HumanoidStateType.Landed and UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+                    hum:ChangeState(Enum.HumanoidStateType.Jumping)
                 end
             end
         end
-        -- ESP
         cleanStale()
         for _,plr in ipairs(Players:GetPlayers()) do
             if plr==LocalPlayer then continue end
@@ -1144,45 +1019,35 @@ function loadMainUI()
             if not onScr or depth<0 or depth>CFG.ESPMaxDist then hideESP(e) continue end
             local headPos=head and head.Position or root.Position+Vector3.new(0,3,0)
             local topSP=select(1,toScreen(headPos+Vector3.new(0,0.65,0)))
-            local bH=math.max(28,sp.Y-topSP.Y) local bW=bH*0.58
-            local bX=sp.X-bW/2 local bY=topSP.Y
-            -- Ragebot marker
-            if CFG.RagebotEnabled and e.rbMarker then
-                e.rbMarker.Position=Vector2.new(sp.X,bY-28) e.rbMarker.Visible=true
+            local bH=math.max(28,sp.Y-topSP.Y) local bW=bH*0.58 local bX=sp.X-bW/2 local bY=topSP.Y
+            if CFG.RagebotEnabled and e.rbMarker then e.rbMarker.Position=Vector2.new(sp.X,bY-28) e.rbMarker.Visible=true
             elseif e.rbMarker then e.rbMarker.Visible=false end
             if CFG.ESPBoxes then
                 drawCorners(e,bX,bY,bW,bH)
-                e.box.Size=Vector2.new(bW,bH) e.box.Position=Vector2.new(bX,bY)
-                e.box.Color=CFG.BoxColor e.box.Visible=true
+                e.box.Size=Vector2.new(bW,bH) e.box.Position=Vector2.new(bX,bY) e.box.Color=CFG.BoxColor e.box.Visible=true
             else e.box.Visible=false e.cTL.Visible=false e.cTR.Visible=false e.cBL.Visible=false e.cBR.Visible=false end
             if CFG.ESPHeadDot and head then
                 local hsp=select(1,toScreen(head.Position))
                 e.head.Position=hsp e.head.Color=CFG.BoxColor e.head.Radius=math.max(4,bW*0.12) e.head.Visible=true
             else e.head.Visible=false end
-            if CFG.ESPNames then
-                e.name.Text=plr.DisplayName e.name.Position=Vector2.new(sp.X,bY-15)
-                e.name.Color=CFG.NameColor e.name.Visible=true
-            else e.name.Visible=false end
+            if CFG.ESPNames then e.name.Text=plr.DisplayName e.name.Position=Vector2.new(sp.X,bY-15) e.name.Color=CFG.NameColor e.name.Visible=true else e.name.Visible=false end
             if CFG.ESPDist then
                 local d3=math.floor((root.Position-Camera.CFrame.Position).Magnitude)
                 e.dist.Text=d3.."m" e.dist.Position=Vector2.new(sp.X,bY+bH+3) e.dist.Visible=true
             else e.dist.Visible=false end
             if CFG.ESPHealth then
                 local ratio=math.clamp(hum.Health/math.max(hum.MaxHealth,1),0,1)
-                local barX=bX-6
-                e.hpBg.Size=Vector2.new(3,bH) e.hpBg.Position=Vector2.new(barX,bY) e.hpBg.Visible=true
+                e.hpBg.Size=Vector2.new(3,bH) e.hpBg.Position=Vector2.new(bX-6,bY) e.hpBg.Visible=true
                 local fH=math.floor(bH*ratio)
-                e.hp.Size=Vector2.new(3,fH) e.hp.Position=Vector2.new(barX,bY+bH-fH)
+                e.hp.Size=Vector2.new(3,fH) e.hp.Position=Vector2.new(bX-6,bY+bH-fH)
                 e.hp.Color=Color3.fromRGB(math.floor(255*(1-ratio)),math.floor(220*ratio),50) e.hp.Visible=true
             else e.hpBg.Visible=false e.hp.Visible=false end
             if CFG.ESPTracers then
-                e.tracer.From=Vector2.new(center.X,Camera.ViewportSize.Y)
-                e.tracer.To=sp e.tracer.Color=CFG.TracerColor e.tracer.Visible=true
+                e.tracer.From=Vector2.new(center.X,Camera.ViewportSize.Y) e.tracer.To=sp e.tracer.Color=CFG.TracerColor e.tracer.Visible=true
             else e.tracer.Visible=false end
         end
     end)
 
-    -- ── KEYBINDS ─────────────────────────────────────────────
     UserInputService.InputBegan:Connect(function(i,gp)
         if gp then return end
         if i.KeyCode==Enum.KeyCode.Insert then Main.Visible=not Main.Visible end
@@ -1201,17 +1066,14 @@ function loadMainUI()
             if recoilConn then recoilConn:Disconnect() end
             restoreHitboxes()
             local char=LocalPlayer.Character
-            if char then
-                local hum=char:FindFirstChildOfClass("Humanoid")
-                if hum then hum.WalkSpeed=16 hum.PlatformStand=false end
-            end
+            if char then local hum=char:FindFirstChildOfClass("Humanoid") if hum then hum.WalkSpeed=16 hum.PlatformStand=false end end
             for _,e in pairs(espPool) do for _,d in pairs(e) do pcall(function() d:Remove() end) end end
             fovCircle:Remove()
             pcall(function() ScreenGui:Destroy() end)
             pcall(function() RootGui:Destroy() end)
             RunService:UnbindFromRenderStep("AuthX_v35")
-            print("[AuthX v3.5] Unloaded cleanly.")
+            print("[AuthX v3.5] Unloaded.")
         end
     end)
-    print("[AuthX v3.5] Suite active — INSERT=Menu | RSHIFT=Aim | F1=ESP | F2=Trig | F3=Silent | F4=Rage | DEL=Panic")
+    print("[AuthX v3.5] Active — INSERT=Menu | RSHIFT=Aim | F1=ESP | F2=Trig | F3=Silent | F4=Rage | DEL=Panic")
 end
